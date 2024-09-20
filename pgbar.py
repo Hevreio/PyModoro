@@ -5,7 +5,8 @@ from PySide6.QtWidgets import QVBoxLayout, QSlider, QWidget, QApplication
 class CPBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setFixedSize(100, 100)
+        self.setFixedSize(200,200)
+        self.is_working = True
         self.p = 0 # p为归一化的进度值
 
     def upd(self, pp):
@@ -14,7 +15,7 @@ class CPBar(QWidget):
         self.p = pp
         self.update()
 
-    def paintEvent(self, e, is_working=True):
+    def paintEvent(self, e):
 
         # 强制令进度条为圆形
         if self.height() > self.width():
@@ -28,7 +29,7 @@ class CPBar(QWidget):
 
         # 调用QPainter进行画图
         p = QPainter(self)
-        p.fillRect(self.rect(), Qt.white)
+        # p.fillRect(self.rect(), Qt.white)
         p.translate(4, 4)
         p.setRenderHint(QPainter.Antialiasing)
         path, path2 = QPainterPath(), QPainterPath()
@@ -44,7 +45,7 @@ class CPBar(QWidget):
         pen, pen2 = QPen(), QPen() # pen负责部分弧线，pen2负责全部弧线
 
         pen.setCapStyle(Qt.FlatCap)
-        if is_working:
+        if self.is_working:
             pen.setColor(QColor("#e04728"))
         else:
             pen.setColor(QColor("#50c21b"))

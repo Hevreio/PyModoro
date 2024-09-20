@@ -1,11 +1,21 @@
 import sys 
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout
 from PySide6.QtCore import QThread, Signal, QTimer, Qt
 from pgbar import CPBar
+from Ui_PyModoro import Ui_Form
+
 
 class TomatoTimer(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.mainLayout = QGridLayout()
+        self.clockLayout = QVBoxLayout()
+        self.infoLayout = QVBoxLayout()
+        self.mainLayout.addLayout(self.clockLayout, 0, 0, 1, 2)
+        self.mainLayout.addLayout(self.infoLayout, 0, 2, 1, 1)
+        self.setLayout(self.mainLayout)
 
         self.work_duration = 25 * 60
         self.break_duration = 5 * 60
@@ -18,38 +28,45 @@ class TomatoTimer(QWidget):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
 
+
+
     
     def init_ui(self):
+        
         self.setWindowTitle("Tomato Timer")
         self.timer_label = QLabel("25:00", self)
-        self.timer_label.setStyleSheet("font-size: 50px")
-        self.resize(100,200)
+        self.timer_label.setStyleSheet("font-size: 40px")
+        self.resize(480, 320)
         screen = app.primaryScreen()
         center = screen.availableGeometry().center()
         self.move(center.x() - self.width() / 2, center.y() - self.height() / 2)
 
-        
+        self.prog_bar = CPBar(self)
+        self.clockLayout.addWidget(self.prog_bar, alignment=Qt.AlignmentFlag.AlignCenter)   
 
-        btn = QPushButton("Toggle", self)
-        btn.clicked.connect(self.toggle_timer)
 
+        btn_grp = QHBoxLayout()
+        btn_tg = QPushButton("Toggle", self)
+        btn_tg.clicked.connect(self.toggle_timer)
+        btn_rst = QPushButton("Reset", self)
+        btn_rst.clicked.connect(lambda:self.reset_timer)
         btn_plus = QPushButton("+", self)
         btn_plus.clicked.connect(lambda: self.adjust_time(1))
         btn_minus = QPushButton("-", self)  
         btn_minus.clicked.connect(lambda: self.adjust_time(-1))
+        
 
-        self.prog_bar = CPBar(self)
+        self.clockLayout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        btn_grp.addWidget(btn_tg)
+        btn_grp.addWidget(btn_rst)
+        btn_grp.addWidget(btn_plus)
+        btn_grp.addWidget(btn_minus)
+        self.clockLayout.addLayout(btn_grp)
+        self.infoLayout.addWidget(QLabel("Work Duration"))
 
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.timer_label)
-        layout.addWidget(btn)
-        layout.addWidget(btn_plus)
-        layout.addWidget(btn_minus)
-        layout.addWidget(self.prog_bar)
-
-        self.setLayout(layout)
         self.show()
+
 
     def toggle_timer(self):
         if self.is_running:
@@ -63,7 +80,7 @@ class TomatoTimer(QWidget):
             self.time_left -= 1
             mins, secs = divmod(self.time_left, 60)
             self.timer_label.setText(f"{mins:02d}:{secs:02d}")
-            self.prog_bar.upd(self.time_left / self.work_duration)
+            self.prog_bar.upd(self.time_left / self.work_duration, self.is_work_time)
 
         else:
             self.timer.stop()
@@ -85,6 +102,7 @@ class TomatoTimer(QWidget):
             if self.break_duration < 60:
                 self.break_duration = 60
             self.time_left = self.break_duration
+            self.prog_bar.is_working = self.is_work_time
         mins, secs = divmod(self.time_left, 60)
         self.timer_label.setText(f"{mins:02d}:{secs:02d}")
 
