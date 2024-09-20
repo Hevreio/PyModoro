@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QVBoxLayout, QSlider, QWidget, QApplication
 class CPBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setFixedSize(200,200)
+        # self.setFixedSize(200,200)
         self.is_working = True
         self.p = 0 # p为归一化的进度值
 
@@ -16,31 +16,21 @@ class CPBar(QWidget):
         self.update()
 
     def paintEvent(self, e):
-
-        # 强制令进度条为圆形
-        if self.height() > self.width():
-            self.setFixedWidth(self.height())
-
-        if self.width() > self.height():
-            self.setFixedHeight(self.width())
-
         pd = self.p * 360
         rd = 360 - pd
 
         # 调用QPainter进行画图
         p = QPainter(self)
         # p.fillRect(self.rect(), Qt.white)
-        p.translate(4, 4)
+        p.translate(5,7)
         p.setRenderHint(QPainter.Antialiasing)
         path, path2 = QPainterPath(), QPainterPath()
 
         circle_width = self.width() - self.width() / 10
-        widht_half = circle_width/2
-
-        path.moveTo(widht_half, 0)
+        width_half = circle_width/2
+        path.moveTo(width_half, 0)
         # 定义了所在矩形区域
-        circle_rect = QRectF(self.rect().left() / 2, self.rect().top() / 2, circle_width, self.height() - self.height() / 10)
-
+        circle_rect = QRectF(self.rect().left() / 2, self.rect().top() / 2, circle_width, self.height() * 0.9)
         path.arcTo(circle_rect, 90, -pd) # 绘制全部的弧线
         pen, pen2 = QPen(), QPen() # pen负责部分弧线，pen2负责全部弧线
 
@@ -54,7 +44,7 @@ class CPBar(QWidget):
         p.strokePath(path, pen)
 
         # 灰色的pen2负责背景
-        path2.moveTo(widht_half, 0)
+        path2.moveTo(width_half, 0)
         pen2.setWidth(pen_width)
         pen2.setColor(QColor("#d7d7d7"))
         pen2.setCapStyle(Qt.FlatCap)
@@ -64,22 +54,6 @@ class CPBar(QWidget):
         # pen2.setDashOffset(2.2) # this one too
         p.strokePath(path2, pen2)
         p.setPen(pen)
-
-        # 绘制进度百分比文本
-        font = QFont()
-        percent_size = self.height() / 7
-        font.setPointSizeF(percent_size)
-        p.setFont(font)
-        percent_text_position = self.rect().center()
-        p_in_percent = self.p * 100 # 换算
-
-        # 设置中间标签位置
-        percent_text_position.setX(percent_text_position.x() - (
-                percent_size + (self.width()/6 if p_in_percent >= 100 else self.width()/10 if p_in_percent >= 10 else +self.width()/40)))
-        percent_text_position.setY(percent_text_position.y() + percent_size * 2 / 5)
-
-        # 绘制标签
-        p.drawText(percent_text_position, f"{round(self.p * 100, 0)}%")
 
 
 class Test(QWidget):
