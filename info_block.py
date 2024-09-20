@@ -6,8 +6,6 @@ import requests
 from const_value import LOCATION, API, KEY, UNIT, LANGUAGE
 
 
-
-
 class InfoBlock(QWidget):
     def __init__(self):
         super().__init__()
@@ -16,7 +14,6 @@ class InfoBlock(QWidget):
 
         font = QFont("Microsoft YaHei", 13)
         self.setFont(font)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_time)
@@ -40,19 +37,12 @@ class InfoBlock(QWidget):
         self.layout.addWidget(self.lb_temp)
         self.layout.addWidget(self.lb_tomato)
 
+        # 在显示之前先更新一次
         self.update_time()
-        
-
         self.update_weather()
-        # with open("infoblock.qss", "r") as f:
-        #     style = f.read()
-        #     self.setStyleSheet(style)
 
-
-    
     def update_time(self):
         time = QDateTime.currentDateTime()
-        # self.layout.addWidget(QLabel(time.toString(), self))
         self.lb_time.setText(f"{time.toString('yyyy-MM-dd hh:mm:ss')}")
 
     def update_weather(self, location=LOCATION):
@@ -61,11 +51,7 @@ class InfoBlock(QWidget):
         # print(wt['results'][0]['now']['temperature'])
         self.lb_temp.setText(f"{wt['results'][0]['now']['temperature']}" + "°C")
         # print(wt['results'][0]['now']['text'])
-        # self.adjustSize()
-
-
-
-        
+ 
 
 if __name__ == '__main__':
     app = QApplication([])

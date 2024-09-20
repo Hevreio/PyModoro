@@ -5,7 +5,6 @@ from PySide6.QtWidgets import QVBoxLayout, QSlider, QWidget, QApplication
 class CPBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.setFixedSize(200,200)
         self.is_working = True
         self.p = 0 # p为归一化的进度值
 
@@ -29,6 +28,7 @@ class CPBar(QWidget):
         circle_width = self.width() - self.width() / 10
         width_half = circle_width/2
         path.moveTo(width_half, 0)
+
         # 定义了所在矩形区域
         circle_rect = QRectF(self.rect().left() / 2, self.rect().top() / 2, circle_width, self.height() * 0.9)
         path.arcTo(circle_rect, 90, -pd) # 绘制全部的弧线
@@ -61,7 +61,7 @@ class Test(QWidget):
         super().__init__()
         l = QVBoxLayout(self)
         p = CPBar(self)
-        # p.resize(100,100)
+        p.resize(100,100)
         s = QSlider(Qt.Horizontal, self)
         s.setMinimum(0)
         s.setMaximum(100)

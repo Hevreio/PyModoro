@@ -14,6 +14,5 @@ def fetchWeather(location):
 
 if __name__ == '__main__':
     dct = fetchWeather(LOCATION)
-    # print(dct['results'][0]['location'])
     print(dct['results'][0]['now'])
 

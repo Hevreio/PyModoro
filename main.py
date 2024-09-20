@@ -89,8 +89,7 @@ class TomatoTimer(QWidget):
     def update_timer(self):
         if self.time_left > 0:
             self.time_left -= 1
-            mins, secs = divmod(self.time_left, 60)
-            self.timer_label.setText(f"{mins:02d}:{secs:02d}")
+            self.timer_label.setText(self.time_convert(self.time_left))
             if self.is_work_time:
                 self.prog_bar.upd(self.time_left / self.work_duration)
             else:
@@ -103,7 +102,7 @@ class TomatoTimer(QWidget):
             self.is_work_time = not self.is_work_time
             self.prog_bar.is_working = self.is_work_time
 
-            # 已经调整完了工作状态
+            # 已经调整完了工作状，重新初始化记时状态
             if self.is_work_time:
                 self.time_left = self.work_duration
                 self.prog_bar.upd(1)
@@ -116,8 +115,6 @@ class TomatoTimer(QWidget):
                 min, sec = divmod(self.time_left, 60)
                 self.timer_label.setText(f"{min:02d}:{sec:02d}")
                 
-            
-    
     def adjust_time(self, direction):
         if self.is_work_time:
             self.work_duration += direction * 60
@@ -130,10 +127,12 @@ class TomatoTimer(QWidget):
                 self.break_duration = 60
             self.time_left = self.break_duration
             self.prog_bar.is_working = self.is_work_time
-        mins, secs = divmod(self.time_left, 60)
-        self.timer_label.setText(f"{mins:02d}:{secs:02d}")
+        # mins, secs = divmod(self.time_left, 60)
+        # self.timer_label.setText(f"{mins:02d}:{secs:02d}")
+        self.timer_label.setText(self.time_convert(self.time_left))
 
     def reset_timer(self):
+        '''reset the timer to initial state i.e. 25 minutes work time and 5 minutes break time'''
         print("reset")
         self.timer.stop()
         self.is_running = False
@@ -147,11 +146,8 @@ class TomatoTimer(QWidget):
         self.prog_bar.upd(1)
 
 
-            
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # apply_stylesheet(app, theme='light_red.xml')
     window = TomatoTimer()
     window.init_ui_clock()
     window.show()
